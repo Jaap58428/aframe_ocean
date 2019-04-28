@@ -1,26 +1,17 @@
-// setTimeout(() => {
-//     let oceanElements = document.getElementsByClassName('oceanElement');
-//     [].forEach.call(oceanElements, (oceanElement) => {
-//         let animation = document.getElementById("oceanElementWaveAnimation")
-//         oceanElement.appendChild(animation);
-//     });
-// }, 1000);
-
-
 // set global ocean variables
-const oceanLength = 15;  // how many elements long the ocean is
-const oceanWidth = 15;  // how many elements wide the ocean is
-const waveHeight = 1;  // how high each element can rise as part of a wave
+const oceanLength = 20;  // how many elements long the ocean is
+const oceanWidth = 20;  // how many elements wide the ocean is
+const waveHeight = 0.3;  // how high each element can rise as part of a wave
 
 // how wide and deep every element is
 // smaller elements create finer defined ocean at the cost of computing
-// default = 0.25
-const oceanResolution = 0.5;  
+const oceanResolution = 0.8;  
 
 const createOcean = (oceanLength, oceanWidth, waveHeight, oceanResolution) => {
-    // grab complete ocean to fill with elements
+    // grab ocean component to fill with elements
     let ocean = document.getElementById('ocean');
 
+    // cycle through columns and rows to fill ocean with elements
     for (let row = 0; row < oceanLength; row++) {
         for (let column = 0; column < oceanWidth; column++) {
             let newOceanElement = getNewOceanElement();
@@ -61,7 +52,7 @@ const addAnimationToOceanElement = (oceanElement, row, column, waveHeight) => {
 
     setTimeout(() => {
         oceanElement.appendChild(animation)
-    }, (row + column) * 1000);
+    }, (row + column) * 500);
 }
 
 const getRandomBlueTint = () => {
@@ -85,7 +76,6 @@ const getNewOceanElement = () => {
 
 const main = () => {
     createOcean(oceanLength, oceanWidth, waveHeight, oceanResolution);
-    
 }
 
 main();
