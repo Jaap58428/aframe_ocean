@@ -3,11 +3,18 @@
     <script src="aframe.js"></script>
   </head>
   <body>
-    <a-scene>
-      <a-entity id=ocean position="-3 0 0">
+    <a-scene stats>
+      <a-entity 
+        id=ocean 
+        position="-7 0 -20" 
+        rotation="0 -90 0"
+        data-oceanWidth="10"
+        data-oceanLength="10"
+        data-waveHeight="0.5"
+        data-oceanResolution="1.5"
+        >
         <script src="waves.js"></script>
       </a-entity>
-      <a-sky color="#ECECEC"></a-sky>
     </a-scene>
   </body>
 </html>

@@ -1,20 +1,8 @@
-// set global ocean variables
-const oceanLength = 20;  // how many elements long the ocean is
-const oceanWidth = 20;  // how many elements wide the ocean is
-const waveHeight = 0.3;  // how high each element can rise as part of a wave
-
-// how wide and deep every element is
-// smaller elements create finer defined ocean at the cost of computing
-const oceanResolution = 0.8;  
-
-const createOcean = (oceanLength, oceanWidth, waveHeight, oceanResolution) => {
-    // grab ocean component to fill with elements
-    let ocean = document.getElementById('ocean');
-
+const fillOcean = (ocean, oceanLength, oceanWidth, waveHeight, oceanResolution) => {
     // cycle through columns and rows to fill ocean with elements
     for (let row = 0; row < oceanLength; row++) {
         for (let column = 0; column < oceanWidth; column++) {
-            let newOceanElement = getNewOceanElement();
+            let newOceanElement = getNewOceanElement(oceanResolution, waveHeight);
             newOceanElement.setAttribute('color', getRandomBlueTint());
             newOceanElement.setAttribute('position', {
                 x: row * oceanResolution,
@@ -22,6 +10,8 @@ const createOcean = (oceanLength, oceanWidth, waveHeight, oceanResolution) => {
                 z: (0 - column) * oceanResolution
             });
 
+            // animation depends on getting the current location from canvas
+            // wait untill component is initialised
             newOceanElement.addEventListener('loaded', () => {
                 addAnimationToOceanElement(newOceanElement, row, column, waveHeight);
             })   
@@ -32,6 +22,7 @@ const createOcean = (oceanLength, oceanWidth, waveHeight, oceanResolution) => {
 }
 
 const addAnimationToOceanElement = (oceanElement, row, column, waveHeight) => {
+    // build up new animation component
     let animation = document.createElement('a-animation');
     animation.setAttribute('attribute', 'position');
     animation.setAttribute('dur', '2000');
@@ -46,36 +37,60 @@ const addAnimationToOceanElement = (oceanElement, row, column, waveHeight) => {
     animation.setAttribute('to', `${newLocation.x} ${newLocation.y} ${newLocation.z}`);
 
     animation.setAttribute('direction', 'alternate');
-    animation.setAttribute('easing', 'ease');
+    animation.setAttribute('easing', 'ease-in');
     animation.setAttribute('repeat', 'indefinite');
-    animation.setAttribute('delay', '300');
+    animation.setAttribute('delay', '2000');
 
+    // add animation to component based of diagonal 2d raster
     setTimeout(() => {
         oceanElement.appendChild(animation)
-    }, (row + column) * 500);
+    }, (row * 1.4 + column * 0.6) * 500);
 }
 
 const getRandomBlueTint = () => {
     // https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#HSL_colors
-    const hue = Math.round((Math.random() * 60)) + 180;
-    const saturation = Math.round((Math.random() * 50)) + 25;
+    const hue = Math.round((Math.random() * 20)) + 200;
+    const saturation = Math.round((Math.random() * 50)) + 50;
     const lightness = Math.round((Math.random() * 50)) + 25;
 
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
-const getNewOceanElement = () => {
+const getNewOceanElement = (oceanResolution, waveHeight) => {
+    // generate a standard ocean element
     let oceanElement = document.createElement('a-box');
     oceanElement.setAttribute('depth', oceanResolution.toString());
     oceanElement.setAttribute('width', oceanResolution.toString());
-    oceanElement.setAttribute('height', (waveHeight + 0.1).toString());
+
+    // always add a bit more height then animation needs
+    // this avoids potential clipping
+    oceanElement.setAttribute('height', (waveHeight + 0.05).toString());
+    
     oceanElement.className = "oceanElement"
 
     return oceanElement;
 }
 
 const main = () => {
-    createOcean(oceanLength, oceanWidth, waveHeight, oceanResolution);
+    // grab ocean component to fill with elements
+    let ocean = document.getElementById('ocean');
+
+    // set global ocean variables
+    let oceanLength = parseInt(ocean.getAttribute('data-oceanLength'));  // how many elements long the ocean is
+    if (oceanLength == undefined) {oceanLength = 10}
+
+    let oceanWidth = parseInt(ocean.getAttribute('data-oceanWidth'));  // how many elements wide the ocean is
+    if (oceanWidth == undefined) {oceanWidth = 20}
+
+    let waveHeight = parseFloat(ocean.getAttribute('data-waveHeight'));  // how high each element can rise as part of a wave
+    if (waveHeight == undefined) {waveHeight = 0.5}
+
+    // how wide and deep every element is
+    // smaller elements create finer defined ocean at the cost of computing
+    let oceanResolution = parseFloat(ocean.getAttribute('data-oceanResolution'));
+    if (oceanResolution == undefined) {oceanResolution = 1}
+
+    fillOcean(ocean, oceanLength, oceanWidth, waveHeight, oceanResolution);
 }
 
 main();
